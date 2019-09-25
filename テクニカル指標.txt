@@ -1,0 +1,25 @@
+# 移動平均
+
+def calc_simple_rolling_mean(terms=5, index=True):
+    rolling_means = []
+    for i in range(len(btcprice)):
+        data = btcprice['price'][i-terms:i]
+        sum_ = 0
+        if data.empty:
+            pass
+        else:
+            for e in data:
+                sum_ += e
+            rolling_terms = [data.index[-1], sum_/terms]
+            rolling_means.append(rolling_terms)
+    if index:
+        return pd.DataFrame(rolling_means, columns=['date', 'price'])
+    else:
+        df = pd.DataFrame(rolling_means)
+        df.index = df[0].values
+        df = df.drop(0, axis=1)
+        df.columns = ['price']
+        return df
+
+a =calc_simple_rolling_mean(terms=25, index=True)
+a
