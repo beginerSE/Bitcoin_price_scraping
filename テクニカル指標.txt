@@ -1,9 +1,8 @@
 # 移動平均
-
-def calc_simple_rolling_mean(terms=5, index=True):
+def calc_sma(price_data, terms=5, index=True):
     rolling_means = []
-    for i in range(len(btcprice)):
-        data = btcprice['price'][i-terms:i]
+    for i in range(len(price_data)):
+        data = price_data['price'][i-terms:i]
         sum_ = 0
         if data.empty:
             pass
@@ -21,5 +20,5 @@ def calc_simple_rolling_mean(terms=5, index=True):
         df.columns = ['price']
         return df
 
-a =calc_simple_rolling_mean(terms=25, index=True)
+a =calc_sma(terms=25, index=True)
 a
