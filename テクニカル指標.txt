@@ -24,26 +24,28 @@ a =calc_sma(terms=25, index=True)
 a
 
 # 指数移動平均線
-def calc_ema(price_data, terms=5, index=True):
-    sma = calc_sma(price_data=price_data, terms=5, index=False)
+def calc_ema(price_data, terms, index=True):
+    sma = calc_sma(price_data=price_data, terms=terms, index=False)
     a = 2 / (terms + 1)
-    pala = 7-terms
+    
     ema = []
-    for i in range(len(sma)+pala):
+    for i in range(len(sma)+1):
         if i==0:
+            print(sma.iloc[0])
             ema_data = float(sma.iloc[0].values)
             ema.append([sma.index[0], ema_data])
         else:
-            ema_data = ema[i-1][1] + a*(float(price_data.iloc[i+terms-1-1].values)-ema[i-1][1])
-            ema.append([price_data.index[terms-1+i-1], ema_data])
+            ema_data = ema[i-1][1] + a*(float(price_data.iloc[(i)+(terms-1)].values)-ema[i-1][1])
+            ema.append([price_data.index[terms-1+i], ema_data])
     if index:
-        return pd.DataFrame(ema, columns=['date', 'price']).iloc[terms-1:]
+        return pd.DataFrame(ema, columns=['date', 'price'])
     else:
         df = pd.DataFrame(ema)
         df.index = df[0].values
         df = df.drop(0, axis=1)
         df.columns = ['price']
-        return df.iloc[terms-1:]
+        return df
+
 
 ema = calc_ema(price_data=btcprice, terms=5, index=True)
 ema
