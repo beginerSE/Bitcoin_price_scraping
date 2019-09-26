@@ -58,6 +58,29 @@ btcprice.ewm(span=5).mean().iloc[4:]
 30分程度で書いたので処理速度とか最適化のロジックとかはがばがばですが、
 こんな感じでテクニカル指標はPythonを使わずとも実装することが可能です。
 
-まあPythonでのテクニカル指標の計算はtalibとPandasで事足りますが、
-これくらいの計算式は実装できないと機械学習系のアルゴリズムは実装できない
+まあPythonでのテクニカル指標の計算はtalibとPandasで事足りますが、こういうのもたまにはやっておく
+
+
+#　MACDを計算する
+def calc_macd(short_term, long_term):
+    ema_short = btcprice.ewm(span=short_term).mean()
+    ema_long = btcprice.ewm(span=long_term).mean()
+    btcprice.ewm(span=12).mean()
+    start = ema_long.index[0]
+    end = ema_long.index[-1]
+    macd_value = ema_short[start:end].values-ema_long.values
+    macd_index = ema_long.index
+    macd = pd.DataFrame(macd_value, index=macd_index)
+    return macd
+calc_macd(12, 26).plot()
+
+
+
+
+
+
+
+
+
+
 
