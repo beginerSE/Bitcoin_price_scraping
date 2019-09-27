@@ -1,79 +1,16 @@
-# 移動平均
-def calc_sma(price_data, terms=5, index=True):
-    rolling_means = []
-    for i in range(len(price_data)):
-        data = price_data['price'][i-terms:i]
-        sum_ = 0
-        if data.empty:
-            pass
-        else:
-            for e in data:
-                sum_ += e
-            rolling_terms = [data.index[-1], sum_/terms]
-            rolling_means.append(rolling_terms)
-    if index:
-        return pd.DataFrame(rolling_means, columns=['date', 'price'])
-    else:
-        df = pd.DataFrame(rolling_means)
-        df.index = df[0].values
-        df = df.drop(0, axis=1)
-        df.columns = ['price']
-        return df
-
-a =calc_sma(terms=25, index=True)
-a
-
-# 指数移動平均線
-def calc_ema(price_data, terms, index=True):
-    sma = calc_sma(price_data=price_data, terms=terms, index=False)
-    a = 2 / (terms + 1)
-    
-    ema = []
-    for i in range(len(sma)+1):
-        if i==0:
-            print(sma.iloc[0])
-            ema_data = float(sma.iloc[0].values)
-            ema.append([sma.index[0], ema_data])
-        else:
-            ema_data = ema[i-1][1] + a*(float(price_data.iloc[(i)+(terms-1)].values)-ema[i-1][1])
-            ema.append([price_data.index[terms-1+i], ema_data])
-    if index:
-        return pd.DataFrame(ema, columns=['date', 'price'])
-    else:
-        df = pd.DataFrame(ema)
-        df.index = df[0].values
-        df = df.drop(0, axis=1)
-        df.columns = ['price']
-        return df
-
-
-ema = calc_ema(price_data=btcprice, terms=5, index=True)
-ema
-
-EMAの計算式が2通りあるのか、サイトによって表現が違っていてよくわかりませんでしたが、とりあえずPandasのEMAを算出する関数である
-btcprice.ewm(span=5).mean().iloc[4:]
-とほぼ同じ数値になっているので、これであってそう
-
-
-30分程度で書いたので処理速度とか最適化のロジックとかはがばがばですが、
-こんな感じでテクニカル指標はPythonを使わずとも実装することが可能です。
-
-まあPythonでのテクニカル指標の計算はtalibとPandasで事足りますが、こういうのもたまにはやっておく
-
 
 #　MACDを計算する
 def calc_macd(short_term, long_term):
-    ema_short = btcprice.ewm(span=short_term).mean()
-    ema_long = btcprice.ewm(span=long_term).mean()
-    btcprice.ewm(span=12).mean()
-    start = ema_long.index[0]
-    end = ema_long.index[-1]
-    macd_value = ema_short[start:end].values-ema_long.values
-    macd_index = ema_long.index
-    macd = pd.DataFrame(macd_value, index=macd_index)
-    return macd
+ema_short = btcprice.ewm(span=short_term).mean()
+ema_long = btcprice.ewm(span=long_term).mean()
+btcprice.ewm(span=12).mean()
+start = ema_long.index[0]
+end = ema_long.index[-1]
+macd_value = ema_short[start:end].values-ema_long.values
+macd_index = ema_long.index
+macd = pd.DataFrame(macd_value, index=macd_index)
+return macd
 calc_macd(12, 26).plot()
-
 
 
 
