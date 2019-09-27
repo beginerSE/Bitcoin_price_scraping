@@ -4,6 +4,7 @@ import sqlite3
 import requests
 import datetime
 import json
+import python_bitbankcc
 
 # データベースのパスを指定
 dbpath = 'crypto.sqlite'
@@ -14,7 +15,11 @@ cur = c.cursor()
 
 # テーブルの作成(初回のみ)
 try:
-    #c.execute('create table crypto_id(id integer, ticker, text)')
+    # idとtickerのテーブルを作成する
+    c.execute('create table crypto_id(id integer, ticker, text)')
+    # 出来高の列を追加する
+    c.execute('alter table price_data add column vol float')
+    # 時刻　価格　出来高を格納するテーブルを作成する
     c.execute('create table price_data(date datetime, id integer, price, float)')
 except Exception as e:
     print(e)
@@ -31,6 +36,13 @@ url = ('https://api.bitflyer.com/v1/ticker')
 r = requests.get(url)
 r = json.loads(r.text)
 price = r['ltp']
+
+# bitbankのAPIから価格を取得する
+pub = python_bitbankcc.public()
+xrp = pub.get_ticker('xrp_jpy')
+xrp_price = xrp['last']
+xrp_vol = xrp['vol']
+
 
 # 今日の日付と時間(hour)を取得する
 now = datetime.datetime.now()
